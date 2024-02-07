@@ -1,18 +1,18 @@
 {
-  "name": "myinfo-demo-app",
-  "version": "3.0.0",
-  "description": "This is MyInfo Demo App",
-  "main": "app.js",
+  "name": "myinfo-app",
+  "version": "1.0.0",
+  "description": "This is MyInfo App",
+  "main": "app.mjs",
   "scripts": {
-    "start": "npm run test",
-    "test": "node app.js test"
+    "start": "node app.mjs"
   },
-  "author": "MyInfo Team",
-  "license": "ISC",
+  "author": "Yahya Khamayseh",
+  "license": "",
   "dependencies": {
     "ajv": "^8.6.3",
-    "axios": "^1.2.1",
+    "axios": "^1.4.0",
     "body-parser": "^1.19.0",
+    "chalk": "^5.3.0",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -23,6 +23,7 @@
     "log4js": "^6.3.0",
     "myinfo-connector-v4-nodejs": "1.0.2",
     "node-jose": "^2.2.0",
+    "nodemon": "^2.0.22",
     "npmrc": "^1.1.1",
     "path": "^0.12.7",
     "pem": "^1.14.4",

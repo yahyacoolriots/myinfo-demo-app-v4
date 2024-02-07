@@ -1,400 +1,266 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+  <head>
+    <title>Trainee Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<head>
-	<meta charset="utf-8">
-	<title>Sample Application</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link href="https://fonts.googleapis.com/css?family=Merriweather:300,400%7CPoppins:400,500,600" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+      }
 
-	<script src="assets/components/jquery/jquery.min.js"></script>
-	<script src="assets/components/jquery/purl.js"></script>
-	<script src="assets/components/tether/js/tether.min.js"></script>
+      h1 {
+        color: #333;
+        text-align: center;
+      }
 
-	<script>
-		// ---START---SETUP VARIABLES---
-		var scrollToAppForm = false;
-		var authApiUrl; // URL for authorize API
-		var clientId; // your app_id/client_id provided to you during onboarding
-		var redirectUrl; // callback url for your application
-		var purpose_id; // The purpose of your data retrieval
-		var scope; // the attributes you are retrieving for your application to fill the form
-		var method = "S256"
-		var securityEnable; // the auth level, determines the flow
-		var clientAssertionType = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
-		// ---END---SETUP VARIABLES---
+      form {
+        max-width: 500px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
 
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
 
-		// ---START---WINDOW ONLOAD---
-		window.onload = function (e) {
-			// invoke AJAX call to get the demo app info from config
-			$.ajax({
-				url: "/getEnv",
-				data: {},
-				type: "GET",
-				success: function (result) {
-					// console.log("result:", result);
-					clientId = result.clientId;
-					redirectUrl = result.redirectUrl;
-					scope = result.scope;
-					purpose_id = result.purpose_id;
-					environment = result.environment;
-					authApiUrl = result.authApiUrl;
-				},
-				error: function (result) {
-					alert("ERROR:" + JSON.stringify(result.responseJSON.error));
-				}
-			});
-		}
-		// ---END---WINDOW ONLOAD---
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+      }
 
+      .button-container {
+        display: inline-flex;
+        align-items: center;
+      }
 
-		// ---START---MAIN HANDLER---
-		$(function () {
-			$("#formAuthorize").submit(function (event) {
-				event.preventDefault();
-				callAuthorizeApi();
-			});
-			$("#formApplication").submit(function (event) {
-				event.preventDefault();
-				// add code here to submit the application form back to server for processing
-				$('#complete').toggleClass('hidden');
-			});
-		});
-		// ---END---MAIN HANDLER---
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 16px;
+      }
 
+      #getInfoButton {
+        padding: 0;
+        background-color: transparent;
+        border: none;
+      }
 
-		// ---START---AUTH API---
-		function callAuthorizeApi() {
-			//Call backend server to generate code challenge 
-			$.ajax({
-				url: "/generateCodeChallenge",
-				data: {},
-				type: "POST",
-				success: function (result) {
-					//Redirect to authorize url after generating code challenge
-					var authorizeUrl = authApiUrl + "?client_id=" + clientId +
-						"&scope=" + scope +
-						"&purpose_id=" + purpose_id +
-						"&code_challenge=" + result +
-						"&code_challenge_method=" + method +
-						"&redirect_uri=" + redirectUrl;
+      #getInfoButton:focus {
+        outline: none;
+      }
 
-					window.location = authorizeUrl;
-				},
-				error: function (result) {
-					alert("ERROR:" + JSON.stringify(result.responseJSON.error));
-				}
-			});
-		}
-		// ---END---AUTH API---
+      #getInfoButton img {
+        display: block;
+        width: 65%;
+        height: 65%;
+      }
 
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Trainee Form</h1>
 
-		// ---START---CALLBACK HANDLER (AUTH CODE)
-		if (this.location.href.indexOf("callback?code") > -1) {
-			scrollToAppForm = true;
-			callServerAPIs(); // call the backend server APIs
-		} else if (this.location.href.indexOf("callback") > -1) {
-			scrollToAppForm = true;
-			alert("ERROR:" + JSON.stringify("Missing Auth Code"));
-		}
-		// ---END---CALLBACK HANDLER
+    <form id="traineeForm">
+      <label for="uinfin">UINFIN:</label>
+      <input type="text" id="uinfin" name="uinfin" />
 
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" />
 
-		// ---START---CALL SERVER API - calling server side APIs (token & person) to get the person data for prefilling form
-		function callServerAPIs() {
-			var authCode = $.url(this.location.href).param('code');
-			// console.log("Auth Code:",authCode);
-			// console.log("State:",state);
+      <label for="sex">Sex:</label>
+      <input type="text" id="sex" name="sex" />
 
-			// invoke AJAX call from frontend client side to your backend server side
-			$.ajax({
-				url: "/getPersonData",
-				data: {
-					authCode: authCode,
-					codeVerifier: window.sessionStorage.getItem("codeVerifier")
-				},
-				type: "POST", // post to server side
-				success: function (result) {
-					// console.log("result",result);
-					prefillForm(result);
-				},
-				error: function (result) {
-					alert("ERROR:" + JSON.stringify(result.responseJSON.error));
-				}
-			});
-		}
-		// ---END---CALL SERVER API - calling server side APIs (token & person) to get the person data for prefilling form
+      <label for="race">Race:</label>
+      <input type="text" id="race" name="race" />
 
+      <label for="nationality">Nationality:</label>
+      <input type="text" id="nationality" name="nationality" />
 
-		// ---START---PREFILL FORM (with MyInfo data)
-		function prefillForm(data) {
-			// prefill form data
-			var noaData = "";
-			var address = "";
-			if (data["noa-basic"]) {
-				noaData = str(data["noa-basic"].amount) ? formatMoney(str(data["noa-basic"].amount), 2, ".", ",") : "";
-			}
-			if (data.regadd.type == "SG") {
-				address = str(data.regadd.country) == "" ? "" :
-					str(data.regadd.block) + " " +
-					str(data.regadd.building) + " \n" +
-					"#" + str(data.regadd.floor) + "-" + str(data.regadd.unit) + " " +
-					str(data.regadd.street) + " \n" +
-					"Singapore " + str(data.regadd.postal)
-			} else if (data.regadd.type == "Unformatted") {
-				address = str(data.regadd.line1) + "\n" +
-					str(data.regadd.line2)
-			}
-			var formValues = {
-				"uinfin": str(data.uinfin),
-				"name": str(data.name),
-				"sex": str(data.sex),
-				"race": str(data.race),
-				"nationality": str(data.nationality),
-				"dob": str(data.dob),
-				"email": str(data.email),
-				"mobileno": str(data.mobileno.prefix) + str(data.mobileno.areacode) + " " + str(data.mobileno.nbr),
-				"regadd": address,
-				"housingtype": str(data.housingtype) == "" ? str(data.hdbtype) : str(data.housingtype),
-				"marital": str(data.marital),
-				"edulevel": str(data.edulevel),
-				"assessableincome": noaData
-			};
+      <label for="dob">Date of Birth:</label>
+      <input type="text" id="dob" name="dob" />
 
-			// Populate values
-			populate('#formApplication', formValues);
-		}
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email" />
 
-		function formatMoney(n, c, d, t) {
-			var c = isNaN(c = Math.abs(c)) ? 2 : c,
-				d = d == undefined ? "." : d,
-				t = t == undefined ? "," : t,
-				s = n < 0 ? "-" : "",
-				i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
-				j = (j = i.length) > 3 ? j % 3 : 0;
+      <label for="mobileno">Mobile No:</label>
+      <input type="text" id="mobileno" name="mobileno" />
 
-			return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n -
-				i).toFixed(c).slice(2) : "");
-		}
+      <label for="regadd">Residential Address:</label>
+      <textarea id="regadd" name="regadd"></textarea>
 
-		function populate(frm, data) {
-			$.each(data, function (key, value) {
-				$('[name=' + key + ']', frm).val(value);
-				$('[name=' + key + ']', frm).prop('disabled', true);
-			});
-		}
+      <input type="hidden" id="block" name="block" />
+      <input type="hidden" id="building" name="building" />
+      <input type="hidden" id="floor" name="floor" />
+      <input type="hidden" id="unit" name="unit" />
+      <input type="hidden" id="street" name="street" />
+      <input type="hidden" id="postal" name="postal" />
 
-		// used to output data items with value or desc
-		function str(data) {
-			if (!data)
-				return null;
-			if (data.value)
-				return data.value;
-			else if (data.desc)
-				return data.desc;
-			else if (typeof data == "string")
-				return data;
-			else
-				return "";
-		}
-		// ---END---PREFILL FORM (with MyInfo data)
-	</script>
+      <label for="residentialstatus">Residential Status:</label>
+      <input type="text" id="residentialstatus" name="residentialstatus" />
 
-</head>
+      <label for="cpfemployers">CPF Employers:</label>
+      <input type="text" id="cpfemployers" name="cpfemployers" />
 
-<body class="myinfo">
-	<section class="hero-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-6 col-md-6 d-flex align-items-center full-screen-height">
-					<div class="hero-content-div">
-						<div class="hero-content">
-							<h1>MyInfo Demo Application</h1>
-							<p>This demo is an example of how your application should integrate with MyInfo.</p>
-							<hr>
-							<p>To start the SingPass login and consent process, click on the "Retrieve MyInfo" button
-								below.</p>
-						</div>
-						<form id="formAuthorize">
-							<a href="#" onclick="$(this).closest('form').submit()" class="btn2">Retrieve MyInfo</a>
-						</form>
-						<hr>
-						<small>Note: refer to the <a href="https://www.ndi-api.gov.sg/library/myinfo/resources-personas"
-								target="_BLANK">Personas</a> on the NDI Developer and Partner Portal for the test
-							accounts to be used.</small>
-					</div>
-				</div>
-				<div class="col-lg-6 col-md-6 d-flex align-items-center full-screen-height mobile-hidden">
-					<div class="right-img">
-						<div data-depth="0.40" class="layer">
-							<div class="right-img-bg-1"></div>
-						</div>
-						<div data-depth="0.30" class="layer">
-							<div class="right-img-bg-2"></div>
-						</div>
-						<div data-depth="0.40" class="layer">
-							<img class="right-img-img" src="assets/images/banner-personal.png" alt="">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+      <div class="container">
+        <div class="button-container">
+          <button type="button" onclick="getUserInfo()" id="getInfoButton">
+            <img src="Primary.png" alt="Logo" id="logoImage" />
+          </button>
 
-	<a href="#form" class="form-link">
-		<p>form below</p>
-	</a>
+          <button type="button" onclick="createTrainee()">
+            Create Trainee
+          </button>
+        </div>
+      </div>
+    </form>
 
-	<section id="form" class="lone-about-us section-padding">
-		<form id="formApplication" class="toggle_content">
-			<div class="container">
-				<div class="single-heading">
-					<h2>Form</h2>
-					<h4>Application pre-filled with MyInfo!</h4>
-				</div>
-				<div class="row">
-					<div class="col-md-12 mb-4">
-						<p style="text-align:center;">Confirm your details below and click "Submit Application".</p>
-					</div>
-				</div>
-				<div class="row justify-content-around">
-					<div class="col-md-12 col-lg-5 form-box mb-4">
-						<h3>Personal Information</h3>
-						<hr>
-						<div class="form-group">
-							<label>NRIC</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="uinfin" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Full Name</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="name" value="" placeholder="" required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Sex</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="sex" value="" placeholder="" required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Race</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="race" value="" placeholder="" required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Nationality</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="nationality" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Date Of Birth</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="dob" value="" placeholder="" required="">
-							</div>
-						</div>
-						<hr>
-						<div class="form-group">
-							<label>Email</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="email" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Mobile Number</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="mobileno" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Registered Address</label>
-							<div class="input-group">
-								<textarea cols="50" rows="3" name="regadd"></textarea>
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Housing Type</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="housingtype" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<hr>
-						<div class="form-group">
-							<label>Marital Status</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="marital" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Highest Education Level</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="edulevel" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label>Notice of Assessment - Latest Assessable Income (SGD)</label>
-							<div class="input-group">
-								<input type="text" class="form-control" name="assessableincome" value="" placeholder=""
-									required="">
-							</div>
-						</div>
-					</div>
-					<div class="col-md-12 text-center">
-						<a href="#" class="btn2">Submit Application</a>
-					</div>
-				</div>
-			</div>
-		</form>
-	</section>
+    <script>
+      function createTrainee() {
+        var uinfin = document.getElementById("uinfin").value;
+        var name = document.getElementById("name").value;
+        var sex = document.getElementById("sex").value;
+        var race = document.getElementById("race").value;
+        var nationality = document.getElementById("nationality").value;
+        var dob = document.getElementById("dob").value;
+        var email = document.getElementById("email").value;
+        var mobileno = document.getElementById("mobileno").value;
+        var regadd = document.getElementById("regadd").value;
 
-	<script src="assets/vendor/jquery/jquery-3.3.1.min.js"></script>
-	<script src="assets/vendor/jquery.scrollTo.min.js"></script>
-	<script src="assets/js/main.js"></script>
+        var block = document.getElementById("block").value;
+        var building = document.getElementById("building").value;
+        var floor = document.getElementById("floor").value;
+        var unit = document.getElementById("unit").value;
+        var street = document.getElementById("street").value;
+        var postal = document.getElementById("postal").value;
 
-	<!-- jQuery -->
-	<script src="./assets/components/jquery/jquery.min.js"></script>
+        var residentialstatus =
+          document.getElementById("residentialstatus").value;
+        var cpfemployers = document.getElementById("cpfemployers").value;
 
-	<!-- Bootstrap Core JavaScript -->
-	<script src="./assets/components/bootstrap/js/bootstrap.min.js"></script>
+        var traineeRecordId = localStorage.getItem("traineeRecordId");
+        var employerRecordId = localStorage.getItem("employerRecordId");
+        var redirectURL = localStorage.getItem("redirectURL");
 
-	<!-- Plugin JavaScript -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-	<script src="assets/components/scrollreveal/scrollreveal.min.js"></script>
-	<script src="assets/components/magnific-popup/jquery.magnific-popup.min.js"></script>
+        var url =
+          "/myinfo/updateTadabaseTrainee?" +
+          "uinfin=" +
+          encodeURIComponent(uinfin) +
+          "&name=" +
+          encodeURIComponent(name) +
+          "&sex=" +
+          encodeURIComponent(sex) +
+          "&race=" +
+          encodeURIComponent(race) +
+          "&nationality=" +
+          encodeURIComponent(nationality) +
+          "&dob=" +
+          encodeURIComponent(dob) +
+          "&email=" +
+          encodeURIComponent(email) +
+          "&mobileno=" +
+          encodeURIComponent(mobileno) +
+          "&regadd=" +
+          encodeURIComponent(regadd) +
+          "&block=" +
+          encodeURIComponent(block) +
+          "&building=" +
+          encodeURIComponent(building) +
+          "&floor=" +
+          encodeURIComponent(floor) +
+          "&unit=" +
+          encodeURIComponent(unit) +
+          "&street=" +
+          encodeURIComponent(street) +
+          "&postal=" +
+          encodeURIComponent(postal) +
+          "&residentialstatus=" +
+          encodeURIComponent(residentialstatus) +
+          "&cpfemployers=" +
+          encodeURIComponent(cpfemployers) +
+          "&traineeRecordId=" +
+          encodeURIComponent(traineeRecordId) +
+          "&employerRecordId=" +
+          encodeURIComponent(employerRecordId) +
+          "&redirectURL=" +
+          encodeURIComponent(redirectURL);
+        
+        localStorage.clear();
+        window.location.href = url;
+      }
 
-	<!-- Theme JavaScript -->
-	<script src="assets/js/creative.js"></script>
-	<script>
-		// this needs to be at the bottom of the page so that the page scrolling can work
-		if (scrollToAppForm == true) {
-			// scroll to application form
-			$('#form').toggleClass('hidden');
-			$('html, body').animate({
-				scrollTop: $("#form").offset().top
-			}, 500);
-		}
+      function getUserInfo() {
+        window.location.href = "/myinfo/login";
+      }
 
-		if (securityEnable == 'L0') {
-			$("#formPerson").show();
-		} else {
-			$("#formPerson").hide();
-		}
-	</script>
+      function getQueryParams() {
+        var queryParams = {};
+        var query = window.location.search.substring(1);
+        var params = query.split("&");
+        for (var i = 0; i < params.length; i++) {
+          var param = params[i].split("=");
+          var key = decodeURIComponent(param[0]);
+          var value = decodeURIComponent(param[1]);
+          queryParams[key] = value;
+        }
+        return queryParams;
+      }
 
-</body>
+      function fillFormWithQueryParams() {
+        var queryParams = getQueryParams();
 
+        if (queryParams["redirectURL"]) {
+          localStorage.setItem(
+            "traineeRecordId",
+            queryParams["traineeRecordId"]
+          );
+          localStorage.setItem(
+            "employerRecordId",
+            queryParams["employerRecordId"]
+          );
+          localStorage.setItem("redirectURL", queryParams["redirectURL"]);
+        } else {
+          Object.keys(queryParams).forEach(function (key) {
+            if (key && queryParams[key] && key != 'email' && key != 'mobileno') {
+              $("#" + key)
+                .prop("readonly", true)
+                .prop("disabled", true);
+            }
+          });
+        }
+
+        var form = document.getElementById("traineeForm");
+        for (var key in queryParams) {
+          if (queryParams.hasOwnProperty(key)) {
+            var field = form.elements[key];
+            if (field) field.value = queryParams[key];
+          }
+        }
+      }
+
+      window.onload = fillFormWithQueryParams;
+    </script>
+  </body>
 </html>
