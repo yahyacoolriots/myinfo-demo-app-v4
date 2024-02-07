@@ -19,7 +19,7 @@ ENV NODE_ENV=prod \
     CALLBACK_URL=https://bexo.besorchestrator.app/mistg/callback \
     CREATE_TRAINEE_URL=https://bexo.besorchestrator.app/mistg/createTrainee \
     PURPOSE_ID=32db3fba \
-    AUTHORIZE_URL=https://api.myinfo.gov.sg/com/v4/authorize
+    AUTHORIZE_URL=https://test.api.myinfo.gov.sg/com/v4/authorize
 
 # Expose the port that the app will listen on
 EXPOSE 3001
