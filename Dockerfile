@@ -16,8 +16,8 @@ COPY . .
 # Set the environment variable for the app
 ENV NODE_ENV=prod \
     CLIENT_ID=PROD-201806885D-PPICTECH-COURSEREGN \
-    CALLBACK_URL=https://miprod.bestraining.app/callback \
-    CREATE_TRAINEE_URL=https://miprod.bestraining.app/createTrainee \
+    CALLBACK_URL=https://bexo.besorchestrator.app/miprod/callback \
+    CREATE_TRAINEE_URL=https://bexo.besorchestrator.app/miprod/createTrainee \
     PURPOSE_ID=17cb7e0b \
     AUTHORIZE_URL=https://api.myinfo.gov.sg/com/v4/authorize
 
