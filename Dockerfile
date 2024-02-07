@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Set the environment variable for the app
-ENV NODE_ENV=prod \
+ENV NODE_ENV=test \
     CLIENT_ID=STG-201806885D-PPICTECH-COURSEREGN \
     CALLBACK_URL=https://bexo.besorchestrator.app/mistg/callback \
     CREATE_TRAINEE_URL=https://bexo.besorchestrator.app/mistg/createTrainee \
