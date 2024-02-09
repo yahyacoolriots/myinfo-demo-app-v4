@@ -180,6 +180,48 @@ app.get("/login", (req, res) => {
   res.redirect(authorizeUrl);
 });
 
+app.get("/sp/callback", async function (req, res) {
+  try {
+    const authCode = req.query.code;
+    const codeVerifier = sessionIdCache[req.cookies.sid];
+    console.log("Calling MyInfo NodeJs Library...".green);
+
+    let privateSigningKey = fs.readFileSync(
+      config.APP_CONFIG.APP_CLIENT_PRIVATE_SIGNING_KEY,
+      "utf8"
+    );
+
+    let privateEncryptionKeys = [];
+    readFiles(
+      config.APP_CONFIG.APP_CLIENT_PRIVATE_ENCRYPTION_KEYS,
+      (filename, content) => {
+        privateEncryptionKeys.push(content);
+      },
+      (err) => {
+        throw err;
+      }
+    );
+
+    let personData = await connector.getMyInfoPersonData(
+      authCode,
+      codeVerifier,
+      privateSigningKey,
+      privateEncryptionKeys
+    );
+
+    res.status(200).send({
+      message: "Logged in successfully!",
+    });
+    
+  } catch (error) {
+    console.log("---MyInfo NodeJs Library Error---".red);
+    console.log(error);
+    res.status(500).send({
+      error: error,
+    });
+  }
+});
+
 app.get("/callback", async function (req, res) {
   try {
     const authCode = req.query.code;
